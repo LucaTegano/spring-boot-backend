@@ -12,7 +12,7 @@ import com.example.demo.service.PersonalTaskService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/personal-tasks")
+@RequestMapping("/personal-tasks")
 public class PersonalTaskController {
 
     @Autowired
