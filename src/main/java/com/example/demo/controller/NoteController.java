@@ -1,7 +1,5 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.NoteCollaboratorDto;
-import com.example.demo.dto.NoteDto;
 import com.example.demo.model.Note;
 import com.example.demo.service.NoteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,13 +29,13 @@ public class NoteController {
     }
 
     @PostMapping
-    public Note createNote(@RequestBody NoteDto noteRequest, @AuthenticationPrincipal UserDetails userDetails) {
-        return noteService.createNote(noteRequest, userDetails.getUsername());
+    public Note createNote(@RequestBody Note note, @AuthenticationPrincipal UserDetails userDetails) {
+        return noteService.createNote(note, userDetails.getUsername());
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> updateNote(@PathVariable Long id, @RequestBody NoteDto noteRequest, @AuthenticationPrincipal UserDetails userDetails) {
-        noteService.updateNote(id, noteRequest, userDetails.getUsername());
+    public ResponseEntity<Void> updateNote(@PathVariable Long id, @RequestBody Note note, @AuthenticationPrincipal UserDetails userDetails) {
+        noteService.updateNote(id, note, userDetails.getUsername());
         return ResponseEntity.noContent().build();
     }
 
@@ -49,6 +47,9 @@ public class NoteController {
 
     // --- Collaborator Management Endpoints ---
 
+    /**
+     * Adds a collaborator to a note. Only the owner can add collaborators.
+     
     @PostMapping("/{id}/collaborators")
     public ResponseEntity<Note> addCollaborator(
             @PathVariable Long id,
@@ -66,4 +67,5 @@ public class NoteController {
         Note updatedNote = noteService.removeCollaborator(id, request.getUsername(), userDetails.getUsername());
         return ResponseEntity.ok(updatedNote);
     }
+    */
 }

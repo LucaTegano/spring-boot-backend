@@ -3,8 +3,6 @@ package com.example.demo.repository;
 import com.example.demo.model.Note;
 import com.example.demo.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -43,14 +41,14 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
      * @return An Optional containing the note if found and owned by the user.
      */
     Optional<Note> findByIdAndOwner(Long id, User owner);
-    
+
     /**
-     * A very useful query: finds all notes accessible to a user,
-     * either because they are the owner OR they are a collaborator.
-     * This often saves you from making two separate database calls.
-     * @param user The user to find notes for.
-     * @return A list of all notes accessible by the user.
+     * Finds all tasks owned by a specific user, identified by their ID.
+     * The return type is List<PersonalTask>. If the user has no tasks,
+     * this method will correctly return an empty list.
+     *
+     * @param userId The ID of the user to find tasks for.
+     * @return A list of tasks for the given user; never null.
      */
-    @Query("SELECT n FROM Note n WHERE n.owner = :user OR :user MEMBER OF n.collaborators")
-    List<Note> findAllNotesForUser(@Param("user") User user);
+    List<Note> findByOwner_Id(Long userId);
 }

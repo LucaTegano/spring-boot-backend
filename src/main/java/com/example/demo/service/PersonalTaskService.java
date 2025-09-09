@@ -3,9 +3,7 @@ package com.example.demo.service;
 import com.example.demo.model.PersonalTask;
 import com.example.demo.model.User;
 import com.example.demo.repository.PersonalTaskRepository;
-import com.example.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,51 +15,39 @@ public class PersonalTaskService {
     private PersonalTaskRepository personalTaskRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
-    public List<PersonalTask> getTasksForUser(String username) {
-        // FIX: Look up user by username, which is provided by the authenticated principal.
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
-        return personalTaskRepository.findByOwner_Id(user.getId());
+    public List<PersonalTask> getAllTasksForUser(String username) {
+        User owner = userService.getUserByUsername(username);
+        return personalTaskRepository.findByOwner_Id(owner.getId());
     }
 
-    public PersonalTask createTask(PersonalTask task, String username) {
-        // FIX: Look up user by username.
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
-        task.setOwner(user);
-        return personalTaskRepository.save(task);
+    public PersonalTask createTask(PersonalTask taskRequest, String username) {
+        User owner = userService.getUserByUsername(username);
+        taskRequest.setOwner(owner);
+        return personalTaskRepository.save(taskRequest);
     }
 
-    public PersonalTask updateTask(Long taskId, PersonalTask taskDetails, String username) {
-        // FIX: Look up user by username.
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
-        PersonalTask task = personalTaskRepository.findById(taskId)
-                .orElseThrow(() -> new RuntimeException("Task not found with id: " + taskId));
-
-        if (!task.getOwner().getId().equals(user.getId())) {
-            throw new RuntimeException("User not authorized to update this task");
-        }
-
-        task.setText(taskDetails.getText());
-        task.setCompleted(taskDetails.isCompleted());
-
+    public PersonalTask updateTask(Long taskId, PersonalTask taskRequest, String username) {
+        PersonalTask task = getTaskAndVerifyOwner(taskId, username);
+        task.setText(taskRequest.getText());
+        task.setCompleted(taskRequest.isCompleted());
         return personalTaskRepository.save(task);
     }
 
     public void deleteTask(Long taskId, String username) {
-        // FIX: Look up user by username.
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+        PersonalTask taskToDelete = getTaskAndVerifyOwner(taskId, username);
+        personalTaskRepository.delete(taskToDelete);
+    }
+
+    private PersonalTask getTaskAndVerifyOwner(Long taskId, String username) {
+        User owner = userService.getUserByUsername(username);
         PersonalTask task = personalTaskRepository.findById(taskId)
                 .orElseThrow(() -> new RuntimeException("Task not found with id: " + taskId));
-
-        if (!task.getOwner().getId().equals(user.getId())) {
-            throw new RuntimeException("User not authorized to delete this task");
+        if (!task.getOwner().getId().equals(owner.getId())) {
+            throw new RuntimeException("User not authorized for this task");
         }
 
-        personalTaskRepository.delete(task);
+        return task;
     }
 }

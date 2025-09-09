@@ -1,11 +1,9 @@
 package com.example.demo.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-// A DTO for identifying a collaborator by their username
-@Getter
-@Setter
+
+@Data
 public class NoteCollaboratorDto {
     private String username;
 }

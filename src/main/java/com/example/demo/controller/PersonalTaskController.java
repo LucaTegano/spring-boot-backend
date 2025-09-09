@@ -20,7 +20,7 @@ public class PersonalTaskController {
 
     @GetMapping
     public List<PersonalTask> getTasks(@AuthenticationPrincipal UserDetails userDetails) {
-        return personalTaskService.getTasksForUser(userDetails.getUsername());
+        return personalTaskService.getAllTasksForUser(userDetails.getUsername());
     }
 
     @PostMapping

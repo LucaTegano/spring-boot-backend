@@ -58,8 +58,8 @@ public class SecurityConfiguration {
         CorsConfiguration configuration = new CorsConfiguration();
         // Be more specific in production if possible!
         configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:8080"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE","PATCH", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
         // This is important for credentials/JWT
         configuration.setAllowCredentials(true);
 
