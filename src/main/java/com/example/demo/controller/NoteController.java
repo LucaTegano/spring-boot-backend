@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.NoteListItemDto;
 import com.example.demo.model.Note;
 import com.example.demo.service.NoteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,8 @@ public class NoteController {
     private NoteService noteService;
 
     @GetMapping
-    public List<Note> getAllMyNotes(@AuthenticationPrincipal UserDetails userDetails) {
-        return noteService.getAllNotesForUser(userDetails.getUsername());
+    public List<NoteListItemDto> getAllMyNotes(@AuthenticationPrincipal UserDetails userDetails) {
+        return noteService.getNoteListItemsForUser(userDetails.getUsername());
     }
 
     @GetMapping("/{id}")
@@ -34,9 +35,9 @@ public class NoteController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> updateNote(@PathVariable Long id, @RequestBody Note note, @AuthenticationPrincipal UserDetails userDetails) {
-        noteService.updateNote(id, note, userDetails.getUsername());
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Note> updateNote(@PathVariable Long id, @RequestBody Note note, @AuthenticationPrincipal UserDetails userDetails) {
+        Note updatedNote = noteService.updateNote(id, note, userDetails.getUsername());
+        return ResponseEntity.ok(updatedNote);
     }
 
     @DeleteMapping("/{id}")

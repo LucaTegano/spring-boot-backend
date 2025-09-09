@@ -51,4 +51,13 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
      * @return A list of tasks for the given user; never null.
      */
     List<Note> findByOwner_Id(Long userId);
+    
+    /**
+     * Finds all notes owned by a specific user, identified by their ID,
+     * sorted by lastActivity in descending order (most recent first).
+     *
+     * @param userId The ID of the user to find notes for.
+     * @return A list of notes for the given user, sorted by lastActivity descending; never null.
+     */
+    List<Note> findByOwner_IdOrderByLastActivityDesc(Long userId);
 }

@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.NoteListItemDto;
 import com.example.demo.model.Note;
 import com.example.demo.model.User;
 import com.example.demo.repository.NoteRepository;
@@ -7,7 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class NoteService {
@@ -22,6 +26,49 @@ public class NoteService {
     public List<Note> getAllNotesForUser(String username) {
         User user = userService.getUserByUsername(username);
         return noteRepository.findByOwner_Id(user.getId());
+    }
+
+    @Transactional(readOnly = true)
+    public List<NoteListItemDto> getNoteListItemsForUser(String username) {
+        User user = userService.getUserByUsername(username);
+        // Get notes sorted by lastActivity in descending order (most recent first)
+        List<Note> notes = noteRepository.findByOwner_IdOrderByLastActivityDesc(user.getId());
+        
+        return notes.stream()
+                .map(note -> {
+                    NoteListItemDto dto = new NoteListItemDto();
+                    dto.setId(note.getId());
+                    dto.setTitle(note.getTitle());
+                    dto.setLastActivity(note.getLastActivity());
+                    dto.setFormattedDate(formatDate(note.getLastActivity()));
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+    
+    private String formatDate(LocalDateTime dateTime) {
+        if (dateTime == null) {
+            return "Unknown";
+        }
+        
+        LocalDateTime now = LocalDateTime.now();
+        long daysBetween = ChronoUnit.DAYS.between(dateTime, now);
+        
+        if (daysBetween < 1) {
+            long hoursBetween = ChronoUnit.HOURS.between(dateTime, now);
+            if (hoursBetween < 1) {
+                long minutesBetween = ChronoUnit.MINUTES.between(dateTime, now);
+                if (minutesBetween < 1) {
+                    return "Now";
+                }
+                return minutesBetween + " minute" + (minutesBetween != 1 ? "s" : "") + " ago";
+            }
+            return hoursBetween + " hour" + (hoursBetween != 1 ? "s" : "") + " ago";
+        } else if (daysBetween < 7) {
+            return daysBetween + " day" + (daysBetween != 1 ? "s" : "") + " ago";
+        } else {
+            return dateTime.getMonthValue() + "/" + dateTime.getDayOfMonth() + "/" + dateTime.getYear();
+        }
     }
 
     public Note createNote(Note noteRequest, String username) {
