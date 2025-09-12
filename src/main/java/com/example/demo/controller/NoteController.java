@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.NoteListItemDto;
+import com.example.demo.dto.RecentNotesDto;
 import com.example.demo.model.Note;
 import com.example.demo.service.NoteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,17 @@ public class NoteController {
         return noteService.getNoteListItemsForUser(userDetails.getUsername());
     }
 
+    @GetMapping("/recent")
+    public RecentNotesDto getRecentNotes(@AuthenticationPrincipal UserDetails userDetails) {
+        return noteService.getRecentNotesForUser(userDetails.getUsername());
+    }
+
+    @GetMapping("/search")
+    public List<NoteListItemDto> searchNotes(@RequestParam String query,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        return noteService.searchNotesForUser(query, userDetails.getUsername());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Note> getNoteById(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
         Note note = noteService.getNoteByIdForUser(id, userDetails.getUsername());
@@ -35,7 +47,8 @@ public class NoteController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Note> updateNote(@PathVariable Long id, @RequestBody Note note, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<Note> updateNote(@PathVariable Long id, @RequestBody Note note,
+            @AuthenticationPrincipal UserDetails userDetails) {
         Note updatedNote = noteService.updateNote(id, note, userDetails.getUsername());
         return ResponseEntity.ok(updatedNote);
     }
@@ -50,23 +63,27 @@ public class NoteController {
 
     /**
      * Adds a collaborator to a note. Only the owner can add collaborators.
-     
-    @PostMapping("/{id}/collaborators")
-    public ResponseEntity<Note> addCollaborator(
-            @PathVariable Long id,
-            @RequestBody NoteCollaboratorDto request,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        Note updatedNote = noteService.addCollaborator(id, request.getUsername(), userDetails.getUsername());
-        return ResponseEntity.ok(updatedNote);
-    }
-
-    @DeleteMapping("/{id}/collaborators")
-    public ResponseEntity<Note> removeCollaborator(
-            @PathVariable Long id,
-            @RequestBody NoteCollaboratorDto request,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        Note updatedNote = noteService.removeCollaborator(id, request.getUsername(), userDetails.getUsername());
-        return ResponseEntity.ok(updatedNote);
-    }
-    */
+     * 
+     * @PostMapping("/{id}/collaborators")
+     * public ResponseEntity<Note> addCollaborator(
+     * 
+     * @PathVariable Long id,
+     * @RequestBody NoteCollaboratorDto request,
+     * @AuthenticationPrincipal UserDetails userDetails) {
+     *                          Note updatedNote = noteService.addCollaborator(id,
+     *                          request.getUsername(), userDetails.getUsername());
+     *                          return ResponseEntity.ok(updatedNote);
+     *                          }
+     * 
+     *                          @DeleteMapping("/{id}/collaborators")
+     *                          public ResponseEntity<Note> removeCollaborator(
+     * @PathVariable Long id,
+     * @RequestBody NoteCollaboratorDto request,
+     * @AuthenticationPrincipal UserDetails userDetails) {
+     *                          Note updatedNote =
+     *                          noteService.removeCollaborator(id,
+     *                          request.getUsername(), userDetails.getUsername());
+     *                          return ResponseEntity.ok(updatedNote);
+     *                          }
+     */
 }

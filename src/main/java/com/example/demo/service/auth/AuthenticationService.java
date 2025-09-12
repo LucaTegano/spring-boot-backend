@@ -27,30 +27,47 @@ public class AuthenticationService {
             UserRepository userRepository,
             AuthenticationManager authenticationManager,
             PasswordEncoder passwordEncoder,
-            EmailService emailService
-    ) {
+            EmailService emailService) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
     }
 
-    public User signup(RegisterUserDto input) {
+    public void signup(RegisterUserDto input) {
+        if (userRepository.findByUsername(input.getUsername()).isPresent()) {
+            throw new RuntimeException("Username already exists");
+        }
+
+        Optional<User> optionalUser = userRepository.findByUsername(input.getUsername());
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            if (user.isEnabled()) {
+                throw new RuntimeException("This email is already associated with an account.");
+            } else {
+                // User exists but is not enabled. Resend verification code.
+                user.setVerificationCode(generateVerificationCode());
+                user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(5));
+                sendVerificationEmail(user);
+                userRepository.save(user);
+                throw new RuntimeException(
+                        "This email is already registered but not verified. A new verification email has been sent.");
+            }
+        }
+
         User user = new User(input.getUsername(), input.getEmail(), passwordEncoder.encode(input.getPassword()));
         user.setVerificationCode(generateVerificationCode());
         user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(5));
         user.setEnabled(false);
         sendVerificationEmail(user);
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
     public User authenticate(LoginUserDto input) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         input.getUsername(),
-                        input.getPassword()
-                )
-        );
+                        input.getPassword()));
 
         return userRepository.findByUsername(input.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -92,7 +109,7 @@ public class AuthenticationService {
         }
     }
 
-    private void sendVerificationEmail(User user) { //TODO: Update with company logo
+    private void sendVerificationEmail(User user) { // TODO: Update with company logo
         String subject = "Account Verification";
         String verificationCode = "VERIFICATION CODE " + user.getVerificationCode();
         String htmlMessage = "<html>"
@@ -115,6 +132,7 @@ public class AuthenticationService {
             e.printStackTrace();
         }
     }
+
     private String generateVerificationCode() {
         Random random = new Random();
         int code = random.nextInt(900000) + 100000;
