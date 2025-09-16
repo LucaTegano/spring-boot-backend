@@ -38,26 +38,26 @@ public class Group {
 
     /**
      * The set of users who are members of this group.
-     * This is a Many-to-Many relationship, managed by a join table named "group_members".
+     * This is a Many-to-Many relationship, managed by a join table named
+     * "group_members".
      */
     @ManyToMany
-    @JoinTable(
-            name = "group_members",
-            joinColumns = @JoinColumn(name = "group_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
+    @JoinTable(name = "group_members", joinColumns = @JoinColumn(name = "group_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> members = new HashSet<>();
 
     /**
      * The list of tasks associated with this group.
      * If a group is deleted, all its tasks are also deleted (CascadeType.ALL).
      */
-    @OneToMany(
-            mappedBy = "group",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GroupTask> tasks;
+
+    /**
+     * The list of notes associated with this group.
+     * If a group is deleted, all its notes are also deleted (CascadeType.ALL).
+     */
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Note> notes;
 
     // --- Helper Methods for managing relationships ---
 
@@ -77,5 +77,15 @@ public class Group {
     public void removeTask(GroupTask task) {
         this.tasks.remove(task);
         task.setGroup(null);
+    }
+
+    public void addNote(Note note) {
+        this.notes.add(note);
+        note.setGroup(this);
+    }
+
+    public void removeNote(Note note) {
+        this.notes.remove(note);
+        note.setGroup(null);
     }
 }

@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class GeminiService {
-    private final Client client = Client.builder().apiKey("AIzaSyAj9C1b2fB4CtnetLAEnhIFWzpZAK_s5Ss").build();
+    Client client = new Client();
 
     public String askGemini(String promt) {
 

@@ -54,6 +54,13 @@ public class Note {
     private User owner;
 
     /**
+     * The group this note belongs to (optional).
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_id")
+    private Group group;
+
+    /**
      * The set of users who can collaborate on this note.
      */
     @ManyToMany(fetch = FetchType.LAZY)

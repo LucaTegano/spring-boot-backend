@@ -9,7 +9,7 @@ public interface AiChatMessageRepository extends JpaRepository<AiChatMessage, Lo
 
     // Find all messages for a specific note, ordered by creation time
     List<AiChatMessage> findByNoteIdOrderByCreatedAtAsc(Long noteId);
-    
+
     // Find the most recent messages for context (e.g., last 10)
     List<AiChatMessage> findTop10ByNoteIdOrderByCreatedAtDesc(Long noteId);
 }
