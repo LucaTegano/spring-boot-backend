@@ -6,7 +6,6 @@ import com.example.demo.model.User;
 import com.example.demo.model.Trash;
 import com.example.demo.repository.NoteRepository;
 import com.example.demo.repository.TrashRepository;
-import com.example.demo.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
