@@ -3,10 +3,10 @@ package com.example.demo.dto;
 
 // Correct import for Spring Boot 3+
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data; 
+import lombok.Data;
 
 @Data
-public class AiChatRequestDto {
-    @NotBlank
+public class SendMessageRequestDto {
+    @NotBlank(message = "Message cannot be empty")
     private String message;
 }
