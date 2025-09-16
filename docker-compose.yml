@@ -1,0 +1,23 @@
+app:
+  build: .
+  ports:
+    - "8080:8080"
+  environment:
+    - SPRING_APPLICATION_NAME=demo
+    - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    - SPRING_DATASOURCE_URL=jdbc:postgresql://ep-icy-thunder-a2g6c3d4-pooler.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+    - SPRING_DATASOURCE_USERNAME=neondb_owner
+    - SPRING_DATASOURCE_PASSWORD=npg_DTSht4bH9uXj
+    - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
+    - SECURITY_JWT_SECRET_KEY=YS1zdHJpbmctc2VjcmV0LWF0LWxlYXN0LTI1Ni1iaXRzLWxvbmc=
+    - SECURITY_JWT_EXPIRATION_TIME=3600000
+    - SPRING_MAIL_HOST=smtp.gmail.com
+    - SPRING_MAIL_PORT=587
+    - SPRING_MAIL_USERNAME=lucapaolo2005@gmail.com
+    - SPRING_MAIL_PASSWORD=vemd zagi ymcw gfka
+    - SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=true
+    - SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true
+    - GOOGLE_API_KEY=AIzaSyAFsbd7b_AHHu1MzkNsHA9gNIonkvLU-is
+  networks:
+    - app-network
+artifactId>spring-boot-starter-actuator</artifactId>
