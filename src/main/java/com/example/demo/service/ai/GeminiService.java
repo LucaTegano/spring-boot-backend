@@ -1,16 +1,18 @@
 package com.example.demo.service.ai;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.google.genai.Client;
 import com.google.genai.types.GenerateContentResponse;
 
-import lombok.RequiredArgsConstructor;
-
 @Service
-@RequiredArgsConstructor
 public class GeminiService {
-    Client client = new Client();
+    private final Client client;
+
+    public GeminiService(@Value("${google.api.key}") String apiKey) {
+        this.client = Client.builder().apiKey(apiKey).build();
+    }
 
     public String askGemini(String promt) {
 
@@ -19,10 +21,5 @@ public class GeminiService {
                 promt,
                 null);
         return response.text();
-    }
-
-    public static void main(String args[]) {
-        GeminiService geminiService = new GeminiService();
-        System.out.println(geminiService.askGemini("CIAO"));
     }
 }

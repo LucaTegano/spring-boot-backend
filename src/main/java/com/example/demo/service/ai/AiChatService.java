@@ -109,7 +109,8 @@ public class AiChatService {
         // don't need to append `newQuery` again.
         promptBuilder.append("--- CHAT HISTORY END ---\n\n");
 
-        promptBuilder.append("Based on the note and the chat history, answer the last user message.");
+        promptBuilder.append(
+                "Based on the note and the chat history but you can also search online and use other resources, answer the last user message.");
 
         return promptBuilder.toString();
     }
